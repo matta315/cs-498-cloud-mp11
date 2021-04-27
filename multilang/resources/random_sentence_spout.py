@@ -22,9 +22,9 @@ class SentenceSpout(storm.Spout):
     # Process the next tuple
     def nextTuple(self):
         time.sleep(0.2)
-        # TODO
-        # Task: randomly generate sentence from sentences string array
-        # Note: only generate one sentence in this function
+        sentence = random.choice(SENTENCES)
+        storm.logInfo("Emiting %s" % sentence)
+        storm.emit([sentence])
         pass
         # End
 
