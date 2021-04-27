@@ -3,3 +3,8 @@
 .DS_Store
 
 target/
+
+.classpath
+.factorypath
+.idea
+.project
