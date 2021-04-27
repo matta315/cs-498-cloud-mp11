@@ -31,7 +31,7 @@ class CountBolt(storm.BasicBolt):
         count = self.word_cnt[word]
         storm.logInfo("Emitting %s:%s" % (word, count))
         # Emit the word and count
-        storm.emit([{'word': word, 'count': count}])
+        storm.emit([word, str(count)])
         # TODO
         # Task: word count
         # Hint: using instance variable to tracking the word count
