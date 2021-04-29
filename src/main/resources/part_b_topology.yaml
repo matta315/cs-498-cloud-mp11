@@ -30,7 +30,7 @@ config:
     topology.max.task.parallelism: 3
     # set this to true if you want to see more debug log
     # set it to false before submitting
-    topology.debug: true
+    topology.debug: false
     # Hint: you can set input file path here
     # make sure it's "/tmp/data.txt" in your final submission
 
@@ -43,17 +43,95 @@ components:
       - 2000
       - "uiuc_cs498_mp7"
       - 0
-
+      -
+  - id: "storeMapper"
+    className: "edu.illinois.storm.WordCountStoreMapper"
+    constructorArgs:
+      - "partBWordCount"
   # Hint: redis hash key for part B is "partBWordCount"
 
 # spout definitions
 spouts:
+  - id: "file-reader"
+    className: "org.apache.storm.flux.wrappers.spouts.FluxShellSpout"
+    constructorArgs:
+      # Command line
+      - ["python", "file_reader_spout.py"]
+      # Output field(s)
+      - ["sentence"]
+      # parallelism hint
+    parallelism: 1
+  # multilang/resources/random_sentence_spout.py
+  # Hint: you need to define output field(s) here when using FluxShellSpout
   # Hint: the new file reading spout you need implement in this part is
   # multilang/resources/file_reader_spout.py
 
 # bolt definitions
 bolts:
+  # TODO
+  # Task: implement the split sentences bolt
+  # multilang/resources/split_sentence_bolt.py
+  - id: "splitter-bolt"
+    className: "org.apache.storm.flux.wrappers.bolts.FluxShellBolt"
+    constructorArgs:
+      # Command line
+      - ["python", "split_sentence_bolt.py"]
+      # Output field(s)
+      - ["word"]
+    parallelism: 1
+
+  # TODO
+  # Task: implement the word count bolt
+  # multilang/resources/word_count_bolt.py
+  - id: "counter-bolt"
+    className: "org.apache.storm.flux.wrappers.bolts.FluxShellBolt"
+    constructorArgs:
+      # Command line
+      - ["python", "word_count_bolt.py"]
+      # Output field(s)
+      - ["word","count"]
+    parallelism: 1
+
+  # TODO
+  # Task: initialize RedisStoreBolt using poolConfig and storeMapper
+  # ClassName is "org.apache.storm.redis.bolt.RedisStoreBolt"
+  - id: "redis-cache"
+    className: "org.apache.storm.redis.bolt.RedisStoreBolt"
+    constructorArgs:
+      - ref: "poolConfig"
+      - ref: "storeMapper"
+    parallelism: 1
 
 # stream definitions
 # stream definitions define connections between spouts and bolts.
 streams:
+  # TODO
+  # Task: pipe output of sentences generating spout to split bolt
+  - name: "file-reader --> Splitter" # name isn't used (placeholder for logging, UI, etc.)
+    # The stream emitter
+    from: "file-reader"
+    # The stream consumer
+    to: "splitter-bolt"
+    # Grouping type
+    grouping:
+      type: SHUFFLE
+
+  # TODO
+  # Task: pipe output of split bolt to word count bolt
+  # Hint: choose the right grouping type to make problem easier
+
+  - name: "Splitter -> Counter"
+    from: "splitter-bolt"
+    to: "counter-bolt"
+    grouping:
+      type: FIELDS
+      # field(s) to group on
+      args: ["word"]
+
+  # TODO
+  # Task: pipe output of word count bolt to redis store bolt
+  - name: "Counter -> redis-cache"
+    from: "counter-bolt"
+    to: "redis-cache"
+    grouping:
+      type: SHUFFLE
