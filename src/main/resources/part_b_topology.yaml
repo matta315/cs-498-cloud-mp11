@@ -27,11 +27,12 @@ name: "part-B"
 # this will be passed to the submitter as a map of config options
 config:
     storm.local.hostname: "localhost"
-    topology.max.task.parallelism: 3
+    topology.max.task.parallelism: 12
     # set this to true if you want to see more debug log
     # set it to false before submitting
     topology.debug: false
     # Hint: you can set input file path here
+    input_file: "/tmp/data.txt"
     # make sure it's "/tmp/data.txt" in your final submission
 
 components:
@@ -43,7 +44,7 @@ components:
       - 2000
       - "uiuc_cs498_mp7"
       - 0
-      -
+
   - id: "storeMapper"
     className: "edu.illinois.storm.WordCountStoreMapper"
     constructorArgs:
@@ -78,7 +79,7 @@ bolts:
       - ["python", "split_sentence_bolt.py"]
       # Output field(s)
       - ["word"]
-    parallelism: 1
+    parallelism: 12
 
   # TODO
   # Task: implement the word count bolt
@@ -90,7 +91,7 @@ bolts:
       - ["python", "word_count_bolt.py"]
       # Output field(s)
       - ["word","count"]
-    parallelism: 1
+    parallelism: 12
 
   # TODO
   # Task: initialize RedisStoreBolt using poolConfig and storeMapper
@@ -100,7 +101,7 @@ bolts:
     constructorArgs:
       - ref: "poolConfig"
       - ref: "storeMapper"
-    parallelism: 1
+    parallelism: 12
 
 # stream definitions
 # stream definitions define connections between spouts and bolts.

@@ -20,7 +20,7 @@ class SplitBolt(storm.BasicBolt):
     def initialize(self, conf, context):
         self._conf = conf
         self._context = context
-        storm.logInfo("Split bolt instance starting...")
+        #storm.logInfo("Split bolt instance starting...")
 
     def process(self, tup):
         # Split the inbound sentence at spaces
@@ -29,7 +29,7 @@ class SplitBolt(storm.BasicBolt):
         words = re.split(reg, line)
         # Loop over words and emit
         for word in words:
-            storm.logInfo("Emitting %s" % word)
+            #storm.logInfo("Emitting %s" % word)
             storm.emit([word])
 
         # TODO

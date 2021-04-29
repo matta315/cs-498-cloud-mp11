@@ -15,7 +15,7 @@ class CountBolt(storm.BasicBolt):
         
         self.word_cnt = dict()
 
-        storm.logInfo("Counter bolt instance starting...")
+        #storm.logInfo("Counter bolt instance starting...")
 
         # Hint: Add necessary instance variables and classes if needed
 
@@ -29,7 +29,7 @@ class CountBolt(storm.BasicBolt):
         self.word_cnt[word] += 1
         
         count = self.word_cnt[word]
-        storm.logInfo("Emitting %s:%s" % (word, count))
+        #storm.logInfo("Emitting %s:%s" % (word, count))
         # Emit the word and count
         storm.emit([word, str(count)])
         # TODO
