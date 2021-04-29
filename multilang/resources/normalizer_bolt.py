@@ -16,7 +16,7 @@ class NormalizerBolt(storm.BasicBolt):
             "him", "their"
         }
 
-        storm.logInfo("Normalizer bolt instance starting...")
+        #storm.logInfo("Normalizer bolt instance starting...")
 
     def process(self, tup):
         # TODO:

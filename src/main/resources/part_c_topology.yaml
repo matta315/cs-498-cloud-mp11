@@ -48,7 +48,7 @@ components:
   - id: "storeMapper"
     className: "edu.illinois.storm.WordCountStoreMapper"
     constructorArgs:
-      - "partBWordCount"
+      - "partCWordCount"
   # Hint: redis hash key for part B is "partBWordCount"
 
 # spout definitions
