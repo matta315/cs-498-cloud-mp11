@@ -14,6 +14,8 @@ class TopNFinderBolt(storm.BasicBolt):
 
         # TODO:
         # Task: set N
+        self.d = dict()
+
         pass
         # End
 
@@ -26,7 +28,14 @@ class TopNFinderBolt(storm.BasicBolt):
         Hint: implement efficient algorithm so that it won't be shutdown before task finished
               the algorithm we used when we developed the auto-grader is maintaining a N size min-heap
         '''
-        pass
+        word = tup.values[0].strip()
+        count = tup.values[1].strip()
+        self.d[word] = count
+
+        self.d = dict(sorted(self.d.items(), key=lambda item: item[1]))
+        top_10_words = list(self.d.keys())[0:10]
+
+        storm.emit(['top-N', ', '.join(top_10_words)])
         # End
 
 
