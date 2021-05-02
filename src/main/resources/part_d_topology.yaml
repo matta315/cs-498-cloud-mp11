@@ -21,19 +21,21 @@
 name: "part-D"
 
 # TODO
-# Task: implement your topology for part b
+# Task: implement your topology for part d
 
 # topology configuration
 # this will be passed to the submitter as a map of config options
 config:
     storm.local.hostname: "localhost"
-    topology.max.task.parallelism: 12
+    topology.max.task.parallelism: 3
     # set this to true if you want to see more debug log
     # set it to false before submitting
     topology.debug: false
     # Hint: you can set input file path here
-    input_file: "/tmp/data.txt"
     # make sure it's "/tmp/data.txt" in your final submission
+
+    # Hint: set N here
+    # make sure it's 10 in your final submission
 
 components:
   - id: "poolConfig"
@@ -45,11 +47,14 @@ components:
       - "uiuc_cs498_mp7"
       - 0
 
-  - id: "storeMapper"
+  # TODO
+  # Task: implement the redis store mapper
+  # src/main/java/edu/illinois/storm/TopNStoreMapper.java
+  # redis hash key for part D is "partDTopN"
+  - id: "topNStoreMapper"
     className: "edu.illinois.storm.WordCountStoreMapper"
     constructorArgs:
       - "partDTopN"
-  # Hint: redis hash key for part B is "partBWordCount"
 
 # spout definitions
 spouts:
@@ -102,13 +107,13 @@ bolts:
       - ["word","count"]
     parallelism: 12
 
-  - id: "topN-bolt"
+  - id: "topn-bolt"
     className: "org.apache.storm.flux.wrappers.bolts.FluxShellBolt"
     constructorArgs:
       # Command line
       - ["python", "top_n_finder_bolt.py"]
       # Output field(s)
-      - ["word","count"]
+      - ["top_n","top_n_words"]
     parallelism: 1
 
   # TODO
@@ -118,7 +123,7 @@ bolts:
     className: "org.apache.storm.redis.bolt.RedisStoreBolt"
     constructorArgs:
       - ref: "poolConfig"
-      - ref: "storeMapper"
+      - ref: "topNStoreMapper"
     parallelism: 1
 
 # stream definitions
@@ -153,18 +158,16 @@ streams:
       # field(s) to group on
       args: ["word"]
 
-  - name: "Counter -> topN"
+  - name: "Counter -> Top N Finder"
     from: "counter-bolt"
-    to: "topN-bolt"
+    to: "topn-bolt"
     grouping:
       type: SHUFFLE
-      # field(s) to group on
-      args: ["word"]
 
   # TODO
-  # Task: pipe output of word count bolt to redis store bolt
-  - name: "topN -> redis-cache"
-    from: "topN-bolt"
+  # Task: pipe output of top N word count bolt to redis store bolt
+  - name: "Top N Finder -> redis-cache"
+    from: "topn-bolt"
     to: "redis-cache"
     grouping:
       type: SHUFFLE

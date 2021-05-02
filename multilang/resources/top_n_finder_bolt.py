@@ -29,7 +29,7 @@ class TopNFinderBolt(storm.BasicBolt):
               the algorithm we used when we developed the auto-grader is maintaining a N size min-heap
         '''
         word = tup.values[0].strip()
-        count = tup.values[1].strip()
+        count = int(tup.values[1].strip())
         self.d[word] = count
 
         self.d = dict(sorted(self.d.items(), key=lambda item: item[1]))
