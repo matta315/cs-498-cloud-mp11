@@ -126,7 +126,7 @@ bolts:
     constructorArgs:
       - ref: "poolConfig"
       - ref: "topNStoreMapper"
-    parallelism: 12
+    parallelism: 1
 
 # stream definitions
 # stream definitions define connections between spouts and bolts.
