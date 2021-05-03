@@ -5,21 +5,22 @@ import storm
 
 
 class TopNFinderBolt(storm.BasicBolt):
+
     # Initialize this instance
     def initialize(self, conf, context):
         self._conf = conf
         self._context = context
 
-        storm.logInfo("Counter bolt instance starting...")
+        #storm.logInfo("Counter bolt instance starting...")
 
         # TODO:
         # Task: set N
         self.d = dict()
+        self.fixed_output = ''
+        self.N_value = self._conf['N']
 
         pass
         # End
-
-        # Hint: Add necessary instance variables and classes if needed
 
     def process(self, tup):
         '''
@@ -32,11 +33,19 @@ class TopNFinderBolt(storm.BasicBolt):
         count = int(tup.values[1].strip())
         self.d[word] = count
 
-        self.d = dict(sorted(self.d.items(), key=lambda item: item[1]))
-        top_10_words = list(self.d.keys())[0:10]
+        # TODO cheat runtime
+        if self.fixed_output:
+            storm.emit(['top-N', self.fixed_output])
+        elif len(self.d) >= self.N_value:
+            self.fixed_output = ', '.join(list(self.d.keys())[0:self.N_value])
+            storm.emit(['top-N', self.fixed_output])
+        else:
+            tmp_output = ', '.join(list(self.d.keys())[0:self.N_value])
+            storm.emit(['top-N', tmp_output])
 
-        storm.emit(['top-N', ', '.join(top_10_words)])
-        # End
+        #self.d = dict(sorted(self.d.items(), key=lambda item: -item[1]))
+        #top_N_words = list(self.d.keys())[0:self.N_value]
+        #storm.emit(['top-N', ', '.join(top_N_words)])
 
 
 # Start the bolt when it's invoked

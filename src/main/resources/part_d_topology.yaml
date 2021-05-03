@@ -27,15 +27,17 @@ name: "part-D"
 # this will be passed to the submitter as a map of config options
 config:
     storm.local.hostname: "localhost"
-    topology.max.task.parallelism: 3
+    topology.max.task.parallelism: 12
     # set this to true if you want to see more debug log
     # set it to false before submitting
     topology.debug: false
     # Hint: you can set input file path here
     # make sure it's "/tmp/data.txt" in your final submission
+    input_file: "/tmp/data.txt"
 
     # Hint: set N here
     # make sure it's 10 in your final submission
+    N: 10
 
 components:
   - id: "poolConfig"
@@ -52,7 +54,7 @@ components:
   # src/main/java/edu/illinois/storm/TopNStoreMapper.java
   # redis hash key for part D is "partDTopN"
   - id: "topNStoreMapper"
-    className: "edu.illinois.storm.WordCountStoreMapper"
+    className: "edu.illinois.storm.TopNStoreMapper"
     constructorArgs:
       - "partDTopN"
 
@@ -124,7 +126,7 @@ bolts:
     constructorArgs:
       - ref: "poolConfig"
       - ref: "topNStoreMapper"
-    parallelism: 1
+    parallelism: 12
 
 # stream definitions
 # stream definitions define connections between spouts and bolts.
